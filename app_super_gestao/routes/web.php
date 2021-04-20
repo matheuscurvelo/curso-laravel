@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'PrincipalController@principal');
 Route::get('/sobrenos', 'SobreNosController@sobrenos');
 Route::get('/contato', 'ContatoController@contato');
+
+Route::get('/contato/{nome}/{assunto?}', function(string $nome, string $assunto = 'mensagem nao informada'){
+    echo "Estamos aqui: $nome <br>";
+    echo "Assunto: $assunto <br>";
+});
