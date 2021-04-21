@@ -17,7 +17,7 @@ Route::get('/', 'PrincipalController@principal');
 Route::get('/sobrenos', 'SobreNosController@sobrenos');
 Route::get('/contato', 'ContatoController@contato');
 
-Route::get('/contato/{nome}/{assunto?}', function(string $nome, string $assunto = 'mensagem nao informada'){
+Route::get('/contato/{nome}/{categoria?}', function(string $nome, int $categoria = 0){
     echo "Estamos aqui: $nome <br>";
-    echo "Assunto: $assunto <br>";
-});
+    echo "Categoria: $categoria <br>";
+})->where('nome','[A-Za-z]+')->where('categoria','[0-9]+');
