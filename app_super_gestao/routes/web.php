@@ -13,11 +13,43 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'PrincipalController@principal');
-Route::get('/sobrenos', 'SobreNosController@sobrenos');
-Route::get('/contato', 'ContatoController@contato');
+Route::get('/', 'PrincipalController@principal')->name('site.index');
+Route::get('/sobre-nos', 'SobreNosController@sobrenos')->name('site.sobrenos');
+Route::get('/contato', 'ContatoController@contato')->name('site.contato');
+Route::get('/login',function (){ return 'login'; })->name('site.login');
 
-Route::get('/contato/{nome}/{categoria?}', function(string $nome, int $categoria = 0){
-    echo "Estamos aqui: $nome <br>";
-    echo "Categoria: $categoria <br>";
-})->where('nome','[A-Za-z]+')->where('categoria','[0-9]+');
+
+Route::prefix('/app')->group(function(){
+    Route::get('/clientes',function (){ return 'clientes'; })->name('app.clientes');
+    Route::get('/fornecedores',function (){ return 'fornecedores'; })->name('app.fornecedores');    
+    Route::get('/produtos',function (){ return 'produtos'; })->name('app.produtos');
+});
+
+Route::get('/rota1',function ()
+{
+    echo "Rota 1";
+})->name('site.rota1');
+
+
+//1ª forma
+//Route::redirect('/rota2','/rota1');
+
+//2ª forma
+Route::get('/rota2',function ()
+{
+    return redirect()->route('site.rota1');
+})->name('site.rota2');
+
+//fallback (quando a pagina não existe) erro 404
+Route::fallback(function ()
+{
+    echo "A rota acessada não existe. Volte para a <a href='".route('site.index')."'>pagina inicial</a>";
+});
+
+
+/*
+    Route::get('/contato/{nome}/{categoria?}', function(string $nome, int $categoria = 0){
+        echo "Estamos aqui: $nome <br>";
+        echo "Categoria: $categoria <br>";
+    })->where('nome','[A-Za-z]+')->where('categoria','[0-9]+');
+*/
