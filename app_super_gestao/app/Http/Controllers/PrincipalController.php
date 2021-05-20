@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class PrincipalController extends Controller
 {
+    
     public function principal()
     {
         $motivo_contatos = MotivoContato::all();
