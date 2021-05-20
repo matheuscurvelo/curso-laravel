@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\LogAcessoMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,9 +15,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', 'PrincipalController@principal')->name('site.index');
+
 Route::get('/sobre-nos', 'SobreNosController@sobrenos')->name('site.sobrenos');
+
 Route::get('/contato', 'ContatoController@contato')->name('site.contato');
 Route::post('/contato', 'ContatoController@salvar')->name('site.contato');
+
 Route::get('/login',function (){ return 'login'; })->name('site.login');
 
 
@@ -33,11 +37,3 @@ Route::fallback(function ()
 {
     echo "A rota acessada não existe. Volte para a <a href='".route('site.index')."'>pagina inicial</a>";
 });
-
-
-/*
-    Route::get('/contato/{nome}/{categoria?}', function(string $nome, int $categoria = 0){
-        echo "Estamos aqui: $nome <br>";
-        echo "Categoria: $categoria <br>";
-    })->where('nome','[A-Za-z]+')->where('categoria','[0-9]+');
-*/
