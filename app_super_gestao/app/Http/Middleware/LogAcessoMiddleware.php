@@ -27,3 +27,4 @@ class LogAcessoMiddleware
         dd($resposta);
     }
 }
+
