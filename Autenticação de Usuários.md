@@ -1,7 +1,12 @@
 ﻿# Autenticação de usuários
 1. [Implementando Formulário de Login](#1---implementando-formulrio-de-login) 
 2. [Recebendo os parametros de usuário e senha](#2---recebendo-os-parametros-de-usurio-e-senha)
-3. Validando a existência do usuário e senha no Banco de Dados
+3. [Validando a existência do usuário e senha no Banco de Dados](#3---validando-a-existncia-do-usurio-e-senha-no-banco-de-dados)
+4. [Redirect com envio de parâmetros - Apresentando mensagem de erro de login](#4---redirect-com-envio-de-parmetros---apresentando-mensagem-de-erro-de-login)
+5. [Iniciando a Superglobal Session e validando o acesso a rotas protegidas](#5---iniciando-a-superglobal-session-e-validando-o-acesso-a-rotas-protegidas)
+6. [Implementando o menu de opções da área protegida da aplicação](#6---implementando-o-menu-de-opes-da-rea-protegida-da-aplicao)
+7. [Adicionando a função logout](#7---adicionando-a-funo-logout)
+
 
 ## 1 - Implementando Formulário de Login
 :open_file_folder: Web.php
@@ -82,7 +87,7 @@ class LoginController extends Controller
 {{ $errors->has('senha') ? $errors->first('senha') : '' }}
 ```
 
-##3 - Validando a existência do usuário e senha no Banco de Dados
+## 3 - Validando a existência do usuário e senha no Banco de Dados
 
 :open_file_folder: LoginController.php
 ```php
@@ -119,7 +124,7 @@ class LoginController extends Controller
 }
 ```
 
-##4 - Redirect com envio de parâmetros - Apresentando mensagem de erro de login
+## 4 - Redirect com envio de parâmetros - Apresentando mensagem de erro de login
 
 :open_file_folder: LoginController.php
 ```php
@@ -166,7 +171,7 @@ class LoginController extends Controller
 {{ !empty($erro) ? $erro : '' }}
 ```
 
-##5 - Iniciando a Superglobal Session e validando o acesso a rotas protegidas
+## 5 - Iniciando a Superglobal Session e validando o acesso a rotas protegidas
 
 :open_file_folder: LoginController.php
 ```php
@@ -211,7 +216,7 @@ class AutenticacaoMiddleware
 }
 ```
 
-##5 - Implementando o menu de opções da área protegida da aplicação
+## 6 - Implementando o menu de opções da área protegida da aplicação
 
 :open_file_folder: Web.php
 ```php
@@ -315,7 +320,7 @@ E por último, criar tambem a pasta :open_file_folder:`resources/views/app/layou
 </html>
 ```
 
-##6 - Adicionando a função logout
+## 7 - Adicionando a função logout
 
 :open_file_folder: LoginController.php
 ```php
