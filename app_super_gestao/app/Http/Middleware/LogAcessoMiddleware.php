@@ -24,7 +24,7 @@ class LogAcessoMiddleware
         $resposta = $next($request); 
         $resposta->setStatusCode(201, 'Status e texto modificados');
 
-        dd($resposta);
+        return $resposta;
     }
 }
 
