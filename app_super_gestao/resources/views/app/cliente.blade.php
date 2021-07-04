@@ -1,4 +1,4 @@
-﻿@extends('site.layouts.basico')
+﻿@extends('app.layouts.basico')
 
 @section('titulo','Cliente')
     
