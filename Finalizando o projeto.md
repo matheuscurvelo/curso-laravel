@@ -735,3 +735,80 @@ Criar um componente dentro da pasta produto :open_folder:_component :page_facing
     </div>
 @endsection
 ```
+
+## 5 - Relacionamentos
+`php artisan make:model ProdutoDetalhe`
+
+`php artisan make:controller ProdutoDetalheController -r`
+
+:page_facing_up:web.php
+```php
+Route::resource("produto-detalhe","ProdutoDetalheController");
+```
+
+Fazer a mesma coisa que o item 4.2 só que com a tabela produto_detalhes
+
+### 1 para 1
+Abrir o Modelo Produto.php e inserir um método que retorne o modelo referenciado que possui o id
+da referencia em sua tabela
+
+:page_facing_up:Produto.php
+```php
+class Produto extends Model
+{
+    protected $fillable = ['nome','descricao','peso','unidade_id'];
+
+    public function pdodutoDetalhe()
+    {
+        return $this->hasOne('App\ProdutoDetalhe');
+
+        //produto tem 1 produtoDetalhe
+        
+        //ele deve procurar um registro relacionado em produto_detalhes
+    }
+}
+```
+
+:page_facing_up:index.blade.php
+```html
+<td>{{$produto->nome}}</td>
+<td>{{$produto->descricao}}</td>
+<td>{{$produto->peso}}</td>
+<td>{{$produto->unidade_id}}</td>
+<td>{{$produto->produtoDetalhe->comprimento ?? ''}}</td>
+<td>{{$produto->produtoDetalhe->altura ?? ''}}</td>
+<td>{{$produto->produtoDetalhe->largura ?? ''}}</td>
+```
+
+Também é possível fazer o contrário. Atribuir um método que retorne o modelo de referencia que que possui o id referenciado em sua tabela
+
+```php
+class Produto extends Model
+{
+    protected $fillable = ['nome','descricao','peso','unidade_id'];
+
+    public function produto()
+    {
+        return $this->belongsTo('App\Produto');
+    }
+}
+```
+
+:page_facing_up:edit.blade.php
+```html
+<div class="informacao-pagina">
+
+    <h4>Produto</h4>
+    <div>Nome: {{ $produto_detalhe->produto->nome }}</div>
+    <br>
+    <div>Descrição: {{ $produto_detalhe->produto->descricao }}</div>
+    <br>
+
+    <div style="width: 30%; margin: 0 auto">
+        @component('app.produto_detalhe._components.form_create_edit',compact('produto_detalhe','unidades'))
+            
+        @endcomponent
+    </div>
+</div>
+```
+![1para1](1para1.png)
