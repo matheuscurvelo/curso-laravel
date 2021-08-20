@@ -812,3 +812,19 @@ class Produto extends Model
 </div>
 ```
 ![1para1](1para1.png)
+
+- Lazy Loading X Eager Loading
+
+O método padrão é o lazy loading (carregamento lento). Para mudar para o eager loading (carregamento ansioso) é necessário acessar o controller e realizar a seguinte troca. Ex:
+
+```php
+public function edit($id)
+{
+    //de
+    $produto = Produto::find($id);
+    //para
+    $produto = Produto::with(['ProdutoDetalhe'])->find($id);   
+}
+```
+
+repare que dentro do array do método with voce poderá adicionar todos os relacionamentos necessários para o eager loading
