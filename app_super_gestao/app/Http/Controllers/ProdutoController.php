@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Fornecedor;
 use App\Produto;
 use App\ProdutoDetalhe;
 use App\Unidade;
@@ -45,7 +46,8 @@ class ProdutoController extends Controller
     public function create()
     {
         $unidades = Unidade::all();
-        return view('app.produto.create',compact('unidades'));
+        $fornecedores = Fornecedor::all();
+        return view('app.produto.create',compact('unidades','fornecedores'));
     }
 
     /**
@@ -61,6 +63,7 @@ class ProdutoController extends Controller
             'descricao' => 'required|min:3|max:2000',
             'peso' => 'required|integer',
             'unidade_id' => 'exists:unidades,id',
+            'fornecedor_id' => 'exists:fornecedores,id',
         ];
         $request->validate($regras);
 
@@ -91,8 +94,9 @@ class ProdutoController extends Controller
     {
         $produto = Produto::find($id);
         $unidades = Unidade::all();
+        $fornecedores = Fornecedor::all();
 
-        return view('app.produto.edit',compact('produto','unidades'));
+        return view('app.produto.edit',compact('produto','unidades','fornecedores'));
 
     }
 
@@ -105,6 +109,14 @@ class ProdutoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $regras = [
+            'nome' => 'required|min:3|max:40',
+            'descricao' => 'required|min:3|max:2000',
+            'peso' => 'required|integer',
+            'unidade_id' => 'exists:unidades,id',
+            'fornecedor_id' => 'exists:fornecedores,id',
+        ];
+        $request->validate($regras);
         $produto = Produto::find($id)->update($request->all());
         return redirect()->route('produto.show',['produto'=>$id]);
     }

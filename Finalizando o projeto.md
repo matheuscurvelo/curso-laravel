@@ -828,3 +828,115 @@ public function edit($id)
 ```
 
 repare que dentro do array do método with voce poderá adicionar todos os relacionamentos necessários para o eager loading
+
+### 1 para N
+
+`php artisan make:migration alter_produtos_relacionamento_fornecedores`
+
+```php
+class AlterProdutosRelacionamentoFornecedores extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('produtos',function (Blueprint $table)
+        {
+            $fornecedor_id = DB::table('fornecedores')->insertGetId([
+                'nome' => 'Fornecedor padrão SG',
+                'site' => 'fornecedorpadraosg.co.br',
+                'uf' => 'SP',
+                'email' => 'contato@fornecedorpadraosg.com.br'
+            ]);
+
+            $table->unsignedBigInteger('fornecedor_id')->default($fornecedor_id)->after('id');
+            $table->foreign('fornecedor_id')->references('id')->on('fornecedores');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('produtos',function (Blueprint $table)
+        {
+
+            $table->dropForeign('produtos_fornecedor_id_foreign');
+            $table->dropColumn('fornecedor_id');
+            
+        });
+    }
+}
+```
+
+`php artisan migrate`
+
+:page_facing_up:app/produto/index.blade.php
+
+```html
+<th>Fornecedor</th>
+<td>$produto->fornecedor_id<td>
+```
+
+:page_facing_up:Produto.php
+```php
+public function fornecedor()
+{
+    return $this->belongsTo('App\Fornecedor');
+}
+```
+
+:page_facing_up:Fornecedor.php
+```php
+public function produtos()
+{
+    return $this->hasMany('App\Fornecedor');
+}
+```
+
+![1paraN](1paraN.png)
+
+```html
+<tbody>
+    @foreach ($fornecedores as $fornecedor)
+        <tr>
+            <td>{{$fornecedor->nome}}</td>
+            <td>{{$fornecedor->site}}</td>
+            <td>{{$fornecedor->uf}}</td>
+            <td>{{$fornecedor->email}}</td>
+            <td><a href={{route('app.fornecedor.excluir',$fornecedor->id)}}>Excluir</a></td>
+            <td><a href={{route('app.fornecedor.editar',$fornecedor->id)}}>Editar</a></td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <p>Lista de Produtos</p>
+                <table border="1" style="margin:20px;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($fornecedor->produtos as $produto)
+                            <tr>
+                                <td>{{$produto->id}}</td>
+                                <td>{{$produto->nome}}</td>
+                            </tr>
+                        @endforeach 
+                    </tbody>
+                </table>
+            </td>
+            
+        </tr>
+    @endforeach        
+</tbody>
+```
+
+u

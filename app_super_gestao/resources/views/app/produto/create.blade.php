@@ -16,7 +16,7 @@
         </div>
         <div class="informacao-pagina">
             <div style="width: 30%; margin: 0 auto">
-                @component('app.produto._components.form_create_edit',compact('unidades'))
+                @component('app.produto._components.form_create_edit',compact('unidades','fornecedores'))
                     
                 @endcomponent
             </div>
