@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Cliente;
 use Illuminate\Http\Request;
 
-class ClienteController extends Controller
+class PedidoProdutoController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $clientes = Cliente::paginate(10);
-        $request = $request->all();
-        return view('app.cliente.index',compact('clientes','request'));
+        //
     }
 
     /**
@@ -26,7 +23,7 @@ class ClienteController extends Controller
      */
     public function create()
     {
-        return view('app.cliente.create');
+        //
     }
 
     /**
@@ -37,15 +34,7 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
-        $regras = [
-            'nome' => 'required|min:3|max:50'
-        ];
-
-        $request->validate($regras);
-
-        Cliente::create($request->all());
-        return redirect()->route('cliente.index');
-
+        //
     }
 
     /**

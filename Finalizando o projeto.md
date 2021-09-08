@@ -1,7 +1,7 @@
 ﻿# Fianlizando o projeto
 ## 1 - Implementando o cadastro de fornecedores
 
-Criar a pasta :file_folder:resourses/views/app/fornecedor e o colocar :page_facing_up:fornecedor.blade.php dentro dela e renomear este arquivo para :page_facing_up:index.blade.php.
+Criar a pasta :file_folder: /views/app/fornecedor e o colocar :page_facing_up:fornecedor.blade.php dentro dela e renomear este arquivo para :page_facing_up:index.blade.php.
 
 :page_facing_up:FornecedorController.php
 ```php
@@ -939,4 +939,84 @@ public function produtos()
 </tbody>
 ```
 
-u
+### N para N
+
+`php artisan make:model Cliente`
+
+`php artisan make:model Pedido`
+
+`php artisan make:model PedidoProduto`
+
+`php artisan make:migration create_clientes_pedidos_produtos`
+
+```php
+class CreateClientesPedidosProdutos extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('clientes', function (Blueprint $table) {
+            $table->id();
+            $table->string('nome',50);
+            $table->timestamps();
+        });
+
+        Schema::create('pedidos', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('cliente_id');
+            $table->timestamps();
+
+            $table->foreign('cliente_id')->references('id')->on('clientes');
+        });
+
+        Schema::create('pedidos_produtos', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('pedido_id');
+            $table->unsignedBigInteger('produto_id');
+            $table->timestamps();
+
+            $table->foreign('pedido_id')->references('id')->on('pedidos');
+            $table->foreign('produto_id')->references('id')->on('produtos');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //desabilita a restrição de foreign key
+        Schema::disableForeignKeyConstraints();
+
+        Schema::dropIfExists('clientes');
+        Schema::dropIfExists('pedidos');
+        Schema::dropIfExists('pedidos_produtos');
+
+        Schema::enableForeignKeyConstraints();
+
+    }
+}
+```
+
+`php artisan migration`
+
+`php artisan make:controller ClienteController -r`
+
+`php artisan make:controller PedidoController -r`
+
+`php artisan make:controller PedidoProdutoController -r`
+
+:page_facing_up:web.php
+```php
+Route::prefix('/app')->middleware('autenticacao:padrao,visitante,p3,p4')->group(function(){
+    Route::resource('cliente', ClienteController::class);
+    Route::resource('pedido', PedidoController::class);
+    Route::resource('pedido-produto', PedidoProdutoController::class);
+});
+```
