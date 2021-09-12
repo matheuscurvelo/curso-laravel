@@ -1017,6 +1017,201 @@ class CreateClientesPedidosProdutos extends Migration
 Route::prefix('/app')->middleware('autenticacao:padrao,visitante,p3,p4')->group(function(){
     Route::resource('cliente', ClienteController::class);
     Route::resource('pedido', PedidoController::class);
-    Route::resource('pedido-produto', PedidoProdutoController::class);
 });
+```
+
+Fazer o mesmo processo das telas anteriores para o Pedido e o Cliente
+
+:page_facing_up:web.php
+```php
+Route::prefix('/app')->middleware('autenticacao:padrao,visitante,p3,p4')->group(function(){
+
+    Route::get('pedido-produto/create/{pedido_id}','PedidoProdutoController@create')->name('pedido-produto.create');
+    Route::post('pedido-produto/store/{pedido_id}','PedidoProdutoController@store')->name('pedido-produto.store');
+
+});
+```
+adicionar a referencia a essa rota 
+
+:page_facing_up:views/app/pedido/index.blade.php
+```html
+<td>{{$pedido->id}}</td>                                
+<td>{{$pedido->cliente_id}}</td>                                
+<td><a href={{route('pedido-produto.create',$pedido->id)}}>Adicionar Produtos</a></td>
+<td><a href={{route('pedido.show',$pedido->id)}}>Vizualizar</a></td>
+```
+
+:page_facing_up:PedidoProdutoController.php
+```php
+class PedidoProdutoController extends Controller
+{
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create($pedido_id)
+    {
+        $pedido = Pedido::find($pedido_id);
+
+        $produtos = Produto::all();
+
+        return view('app.pedido_produto.create',compact('pedido','produtos'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request, $pedido_id)
+    {
+        $regras = [
+            'produto_id' => 'exists:produtos,id'
+        ];
+
+        $request->validate($regras);
+
+        $pedidoProduto = new PedidoProduto();
+        $pedidoProduto->pedido_id = $pedido_id;
+        $pedidoProduto->produto_id = $request->input('produto_id');
+        $pedidoProduto->save();
+        
+        return redirect()->route('pedido-produto.create', compact('pedido_id'));
+
+    }
+}
+```
+
+:page_facing_up:views/app/pedido_produto/create.blade.php
+```html
+@extends('app.layouts.basico')
+
+@section('titulo','Pedido Produto')
+    
+@section('conteudo')
+    <div class="conteudo-pagina">
+        <div class="titulo-pagina-2">
+            <p>Adicionar Produtos ao pedido</p>
+        </div>
+        <div class="menu">
+            <ul>
+                <li><a href="{{ route('pedido.index') }}">Voltar</a></li>
+                <li><a href="">Consulta</a></li>
+
+            </ul>
+        </div>
+        <div class="informacao-pagina">
+            <h4>Detalhes do pedido</h4>
+            <p>ID do pedido: {{ $pedido->id }}</p>
+            <p>ID do cliente: {{ $pedido->cliente_id }}</p>
+
+            <div style="width: 30%; margin: 0 auto">
+                @component('app.pedido_produto._components.form_create',compact('pedido','produtos'))
+                    
+                @endcomponent
+            </div>
+        </div>
+    </div>
+@endsection
+```
+
+:page_facing_up:views/app/pedido_produto/_components/form_create.blade.php
+```html
+<form action="{{ route('pedido-produto.store', ['pedido_id'=>$pedido]) }}" method="POST">
+    @csrf   
+    {{ $msg ?? ''}}
+    
+    <select name="produto_id">
+        <option selected>--Selecione o Produto--</option>
+        @foreach ($produtos as $produto)
+            <option value={{ $produto->id }} {{ old('produto_id') == $produto->id ? 'selected' : ''}}>{{$produto->nome}}</option>
+        @endforeach
+    </select>
+    {{$errors->has('produto_id') ? $errors->first('produto_id') : ''}}
+    
+    <button type="submit" class="borda-preta">
+        @if (isset($pedido->id))
+            Alterar
+        @else
+            Cadastrar
+        @endif
+    </button>
+</form>
+```
+
+![NparaN](NparaN.png)
+
+:page_facing_up:Pedido.php
+```php
+class Pedido extends Model
+{
+    //protected $fillable = ['cliente_id'];
+
+    public function produtos()
+    {
+        //nomes padronizados
+        return $this->belongsToMany('App\Produto','pedidos_produtos');
+
+        //nomes não padronizados
+        // return $this->belongsToMany('App\Produto','pedidos_produtos','pedido_id','produto_id');
+    }
+}
+```
+
+Para os **nomes não padronizados**:
+
+- 3º parametro: representa o nome da FK da tabela mapeada pelo model na tabela de relacionamento;
+
+- 4º parametro: representa o nome da FK da tabela mapeada pelo model utilizado no relacionamento que estamos implementando;
+
+:page_facing_up:views/app/pedido_produto/create.blade.php
+```html
+@extends('app.layouts.basico')
+
+@section('titulo','Pedido Produto')
+    
+@section('conteudo')
+    <div class="conteudo-pagina">
+        <div class="titulo-pagina-2">
+            <p>Adicionar Produtos ao pedido</p>
+        </div>
+        <div class="menu">
+            <ul>
+                <li><a href="{{ route('pedido.index') }}">Voltar</a></li>
+                <li><a href="">Consulta</a></li>
+
+            </ul>
+        </div>
+        <div class="informacao-pagina">
+            <h4>Detalhes do pedido</h4>
+            <p>ID do pedido: {{ $pedido->id }}</p>
+            <p>ID do cliente: {{ $pedido->cliente_id }}</p>
+
+            <div style="width: 30%; margin: 0 auto">
+                <h4>Itens do pedido</h4>
+                <table border="1" width="100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome do produto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($pedido->produtos as $produto)
+                            <tr>
+                                <td>{{ $produto->id }}</td>
+                                <td>{{ $produto->nome }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                @component('app.pedido_produto._components.form_create',compact('pedido','produtos'))
+                    
+                @endcomponent
+            </div>
+        </div>
+    </div>
+@endsection
 ```

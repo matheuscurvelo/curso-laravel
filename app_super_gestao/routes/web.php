@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\LogAcessoMiddleware;
+use App\PedidoProduto;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,8 +44,8 @@ Route::prefix('/app')->middleware('autenticacao:padrao,visitante,p3,p4')->group(
 
     Route::resource('cliente', ClienteController::class);
     Route::resource('pedido', PedidoController::class);
-    Route::resource('pedido-produto', PedidoProdutoController::class);
-
+    Route::get('pedido-produto/create/{pedido_id}','PedidoProdutoController@create')->name('pedido-produto.create');
+    Route::post('pedido-produto/store/{pedido_id}','PedidoProdutoController@store')->name('pedido-produto.store');
 });
 
 Route::get('/teste/{p1}/{p2}','TesteController@teste')->name('teste');
