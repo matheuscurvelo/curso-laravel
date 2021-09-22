@@ -11,7 +11,7 @@ class Pedido extends Model
     public function produtos()
     {
         //nomes padronizados
-        return $this->belongsToMany('App\Produto','pedidos_produtos');
+        return $this->belongsToMany('App\Produto','pedidos_produtos')->withPivot('created_at','quantidade','id');
 
         //nomes não padronizados
         // return $this->belongsToMany('App\Produto','pedidos_produtos','pedido_id','produto_id');

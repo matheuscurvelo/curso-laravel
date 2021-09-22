@@ -1215,3 +1215,28 @@ Para os **nomes não padronizados**:
     </div>
 @endsection
 ```
+
+Fazer o mesmo com a tela de produtos porém na ordem inversa
+
+**Pivot** é usado para recuperar as colunas da tabela intermediária.
+
+```php
+return $this->belongsToMany('App\Produto','pedidos_produtos')->withPivot('created_at');
+```
+
+```html
+<td>{{ $produto->pivot->created_at->format('d/m/Y') }}</td>
+```
+
+**Attach** permite adicionar valores a tabela intermediária de forma mais fácil.
+```php
+$pedido->produtos()->attach([
+    $request->input('produto_id') => ['quantidade' => $request->input('quantidade')]
+]);
+```
+
+**Attach** é usado para desanexar/excluir um relacionamento muitos p/ muitos.
+```php
+$pedido->produtos()->detach([$produto_id]);
+```
+
