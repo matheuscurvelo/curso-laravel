@@ -10,4 +10,9 @@ class Tarefa extends Model
     protected $fillable = ['tarefa','data_limite_conclusao','user_id'];
 
     use HasFactory;
+
+    public function user()
+    {
+        $this->belongsTo('App\Models\User');
+    }
 }
