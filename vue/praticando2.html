@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de Vue</title>
+    <script src="vue.js"></script>
+    <style>
+        .azul{
+            background-color: blue;
+        }
+        .verde{
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        {{ paciente }} <br>
+        <input type="text"  v-model="paciente">
+
+        <hr>
+
+        <label><input type="radio" v-model="sexo" value="F">Feminino </label>
+        <label><input type="radio" v-model="sexo" value="M">Masculino</label>
+        <br> {{ sexo }}
+
+        <hr>
+
+        <select v-model="plano">
+            <option value="" disabled>Selecione um plano</option> <!-- Precisa de um option desabilitado -->
+            <option value="1">Básico 1</option>
+            <option value="2">Básico 2</option>
+            <option value="3">Master</option>
+        </select>
+        <br> {{ plano }}
+
+        <hr>
+
+        <label><input type="checkbox" v-model="doencas" value="Asma">Asma </label>
+        <label><input type="checkbox" v-model="doencas" value="Diabetes 1">Diabetes 1</label>
+        <label><input type="checkbox" v-model="doencas" value="Rinite">Rinite </label>
+        <br> {{ doencas }}
+
+        <hr>
+
+        {{ diagnostico }} <br>
+        <textarea v-model="diagnostico"></textarea>
+    </div>
+
+    <script>
+
+        const vm = new Vue({
+            
+            el: '#app',
+            data: {
+                paciente: 'Jonas',
+                sexo: '',
+                plano: '',
+                doencas: [],
+                diagnostico: ''
+            },  
+            methods: {
+            }
+
+        }) //vm = ViewModel
+
+    </script>
+</body>
+</html>

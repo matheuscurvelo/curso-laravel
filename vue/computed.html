@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computed</title>
+    <script src="vue.js"></script>
+    <style>
+        .azul{
+            background-color: blue;
+        }
+        .verde{
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <h4>Adicionar Pacientes</h4>
+        <span>Nome: <input type="text" id="inputNome"></span><br>
+        <span>Idade: <input type="text" id="inputIdade"></span><br>
+        <span>Plano: <input type="text" id="inputPlano"></span><br>
+        <button @click="adicionarPaciente()">Adicionar</button>
+        
+        <hr>
+        <h4>Ultimo paciente cadastrado</h4>
+        <p v-if="pacientes.length > 0">
+            Paciente: {{ pacientes[pacientes.length - 1].nome }} <br>
+            Idade: {{ pacientes[pacientes.length - 1].idade }} <br>
+            Plano: {{ pacientes[pacientes.length - 1].plano }} <br>
+        </p>
+        
+        <hr>
+        <h4>Pacientes do plano Ouro</h4>
+        <p v-for="p in pacientes">
+            {{p.plano == 'Ouro' ? p.nome : ''}}
+        </p>
+        <hr>
+
+        <h4>Pacientes cadastrados</h4>
+        <p v-for="p in pacientes" v-text="p.nome"></p>
+    </div>
+
+    <script>
+
+        const vm = new Vue({
+            
+            el: '#app',
+            data: {
+                pacientes: []
+            },  
+            methods: {
+                adicionarPaciente(){
+                    this.pacientes.push({
+                        nome: inputNome.value,
+                        idade: inputIdade.value,
+                        plano: inputPlano.value,
+                    })
+                }
+            }
+
+        }) //vm = ViewModel
+
+    </script>
+</body>
+</html>

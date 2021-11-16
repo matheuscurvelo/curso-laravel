@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template</title>
+    <script src="vue.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <!-- renderização condicional -->
+        <template v-if="saudacao">
+            <h1>Boas vindas</h1>
+            <p>Conteúdo da tag <strong>template</strong></p>
+        </template>
+
+        <!-- listas -->
+        <template v-for="n in 10">
+            <p>2 x {{ n }} = {{ 2 * n}}</p>
+        </template>
+
+    </div>
+
+    <script>
+        const vm = new Vue({
+            
+            el: '#app',
+            data: {
+                saudacao: true
+            },  
+            methods: {
+
+            }
+
+        })
+
+    </script>
+</body>
+</html>
