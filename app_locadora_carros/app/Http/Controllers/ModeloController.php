@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Modelo;
+use App\Repositories\ModeloRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ModeloController extends Controller
 {
@@ -18,10 +20,29 @@ class ModeloController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json( $this->modelo->all() );
+        $modeloRepository = new ModeloRepository($this->modelo);
+
+
+        if ($request->has('atributos_marca')) {
+            $atributos_marca = 'marca:id,'.$request->atributos_marca;
+            $modeloRepository->selectAtributosRegistrosRelacionados($atributos_marca);
+        } else {
+            $modeloRepository->selectAtributosRegistrosRelacionados('marca');
+        }
+
+        if ($request->has('filtro')) {
+            $modeloRepository->filtro($request->filtro);
+        }
+        
+        if ($request->has('atributos')) {
+            $modeloRepository->selectAtributos($request->atributos);
+        }
+        
+        return response()->json( $modeloRepository->getResultado() );
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -31,7 +52,7 @@ class ModeloController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate($this->modelo->rules());
+        $request->validate($this->modelo->rules(),$this->modelo->feedback());
 
         $image = $request->file('imagem');
 
@@ -58,7 +79,7 @@ class ModeloController extends Controller
      */
     public function show($id)
     {
-        $modelo = $this->modelo->find($id);
+        $modelo = $this->modelo->with('marca')->find($id);
         if ($modelo === null) {
             return response()->json( ['erro'=>'Recurso pesquisado não existe'], 404);
         }
@@ -95,7 +116,9 @@ class ModeloController extends Controller
 
             
         } else {
-            $request->validate($modelo->rules());
+
+            $request->validate($this->modelo->rules(),$this->modelo->feedback());
+        
         }
 
 
@@ -103,16 +126,21 @@ class ModeloController extends Controller
             return response()->json( ['erro'=>'Recurso solicitado não existe'], 404);
         }
 
+        $modelo->fill($request->all());
+
         //remove o arquivo antigo caso um novo arquivo tiver sido enviado no request
         if ($request->file('imagem')) {
             Storage::disk('public')->delete($modelo->imagem);
+
+            $image = $request->file('imagem');
+
+            $image_urn = $image->store('imagens/modelos','public');
+            $modelo->imagem = $image_urn;
         }
 
-        $image = $request->file('imagem');
-
-        $image_urn = $image->store('imagens/modelos','public');
         
-        $modelo->update([
+        $modelo->save();
+        /* $modelo->update([
             'nome'=>$request->nome, 
             'imagem'=>$image_urn,
             'marca_id' => $request->marca_id, 
@@ -120,7 +148,7 @@ class ModeloController extends Controller
             'lugares' => $request->lugares, 
             'air_bag' => $request->air_bag, 
             'abs' => $request->abs, 
-        ]);
+        ]); */
 
         return response()->json( $modelo );
 

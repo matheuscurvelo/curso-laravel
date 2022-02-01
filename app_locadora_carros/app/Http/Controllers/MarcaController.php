@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Marca;
+use App\Repositories\MarcaRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,9 +19,27 @@ class MarcaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json( $this->marca->all() );
+        $marcaRepository = new MarcaRepository($this->marca);
+
+
+        if ($request->has('atributos_modelos')) {
+            $atributos_modelos = 'modelos:id,'.$request->atributos_modelos;
+            $marcaRepository->selectAtributosRegistrosRelacionados($atributos_modelos);
+        } else {
+            $marcaRepository->selectAtributosRegistrosRelacionados('modelos');
+        }
+
+        if ($request->has('filtro')) {
+            $marcaRepository->filtro($request->filtro);
+        }
+        
+        if ($request->has('atributos')) {
+            $marcaRepository->selectAtributos($request->atributos);
+        }
+
+        return response()->json( $marcaRepository->getResultado() );
     }
 
     /**
@@ -55,7 +74,7 @@ class MarcaController extends Controller
      */
     public function show($id)
     {
-        $marca = $this->marca->find($id);
+        $marca = $this->marca->with('modelos')->find($id);
         if ($marca === null) {
             return response()->json( ['erro'=>'Recurso pesquisado não existe'], 404);
         }
@@ -100,19 +119,27 @@ class MarcaController extends Controller
             return response()->json( ['erro'=>'Recurso solicitado não existe'], 404);
         }
 
+        // Usar este metodo quando precisar alterar alguns dos campos (pode ser mais util em APIs)
+        $marca->fill($request->all());
+
         //remove o arquivo antigo caso um novo arquivo tiver sido enviado no request
         if ($request->file('imagem')) {
             Storage::disk('public')->delete($marca->imagem);
+
+            $image = $request->file('imagem');
+
+            $image_urn = $image->store('imagens','public');
+            $marca->imagem = $image_urn;
         }
 
-        $image = $request->file('imagem');
-
-        $image_urn = $image->store('imagens','public');
+        $marca->save();
+        
+        /* Usar este metodo quando precisar altarar todos os campos
         
         $marca->update([
             'nome'=>$request->nome, 
             'imagem'=>$image_urn
-        ]);
+        ]); */
 
         return response()->json( $marca );
 
